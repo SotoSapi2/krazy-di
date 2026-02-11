@@ -136,7 +136,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.sotosapi2:krazy-di:1.0'
+    implementation 'io.github.sotosapi2:krazy-di:1.1'
 }
 ```
 
