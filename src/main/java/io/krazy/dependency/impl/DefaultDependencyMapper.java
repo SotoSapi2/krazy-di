@@ -109,7 +109,8 @@ public class DefaultDependencyMapper implements IDependencyMapper
         }
 
         return new MappingResult(
-            Collections.unmodifiableMap(output));
+            Collections.unmodifiableMap(output)
+        );
     }
 
     private void search(ServiceDescriptor currentDescriptor, SearchContext context)
