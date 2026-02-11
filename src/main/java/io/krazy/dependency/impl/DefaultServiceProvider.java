@@ -5,7 +5,9 @@ import io.krazy.dependency.api.exception.NoSuchServiceException;
 import io.krazy.dependency.api.injector.ConstructorInjector;
 import io.krazy.dependency.api.injector.FieldInjector;
 import io.krazy.dependency.api.injector.MethodInjector;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -20,11 +22,16 @@ public class DefaultServiceProvider implements IServiceProvider
 {
     @Getter
     private final MappingResult mappingResult;
-    private final ScopeManager scopeManager = new ScopeManager();
 
-    private static class ServiceHolder
+    @Getter(AccessLevel.PROTECTED)
+    private final ScopeManager scopeManager;
+
+    protected static class ServiceHolder
     {
+        @Getter
         private final Lock lock = new ReentrantLock();
+
+        @Getter @Setter
         private volatile @Nullable Object instance;
 
         public void lock()
@@ -38,8 +45,9 @@ public class DefaultServiceProvider implements IServiceProvider
         }
     }
 
-    private static class SingletonManager
+    protected static class SingletonManager
     {
+        @Getter
         private final Map<Class<?>, ServiceHolder> singletonMap = new ConcurrentHashMap<>();
 
         public ServiceHolder getHolder(Class<?> klass)
@@ -61,8 +69,9 @@ public class DefaultServiceProvider implements IServiceProvider
         }
     }
 
-    private static class ScopeManager
+    protected static class ScopeManager
     {
+        @Getter
         private final Map<IServiceRequestable, SingletonManager> scopeMap = new ConcurrentHashMap<>();
 
         public SingletonManager getSingletonHolder(IServiceRequestable requestable)
@@ -83,11 +92,14 @@ public class DefaultServiceProvider implements IServiceProvider
 
     protected static class Scope implements IServiceScope
     {
+        @Getter
         private final DefaultServiceProvider serviceProvider;
+
+        @Getter
         private final ReadWriteLock closeLock = new ReentrantReadWriteLock();
         private volatile boolean isClosed;
 
-        protected Scope(DefaultServiceProvider serviceProvider)
+        public Scope(DefaultServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
@@ -141,7 +153,13 @@ public class DefaultServiceProvider implements IServiceProvider
 
     public DefaultServiceProvider(MappingResult mappingResult)
     {
+        this(mappingResult, new ScopeManager());
+    }
+
+    protected DefaultServiceProvider(MappingResult mappingResult, ScopeManager scopeManager)
+    {
         this.mappingResult = mappingResult;
+        this.scopeManager = scopeManager;
     }
 
     @Override
