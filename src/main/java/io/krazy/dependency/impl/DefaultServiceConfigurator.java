@@ -1,9 +1,6 @@
 package io.krazy.dependency.impl;
 
-import io.krazy.dependency.api.IServiceConfigurator;
-import io.krazy.dependency.api.IServiceProvider;
-import io.krazy.dependency.api.MappingResult;
-import io.krazy.dependency.api.ServiceDescriptor;
+import io.krazy.dependency.api.*;
 import io.krazy.dependency.api.exception.AmbiguousRegisterException;
 import io.krazy.dependency.api.exception.CircularDependencyException;
 import io.krazy.dependency.api.exception.NoSuchServiceException;
@@ -15,7 +12,7 @@ import java.util.Map;
 public class DefaultServiceConfigurator implements IServiceConfigurator
 {
     private final Map<Class<?>, ServiceDescriptor> descriptorMapping = new HashMap<>();
-    private final DefaultDependencyMapper dependencyMapper;
+    private final IDependencyMapper dependencyMapper;
 
     public DefaultServiceConfigurator()
     {
@@ -25,6 +22,11 @@ public class DefaultServiceConfigurator implements IServiceConfigurator
     public DefaultServiceConfigurator(boolean couldInjectPrivateMember)
     {
         this.dependencyMapper = new DefaultDependencyMapper(couldInjectPrivateMember, this);
+    }
+
+    public DefaultServiceConfigurator(IDependencyMapper dependencyMapper)
+    {
+        this.dependencyMapper = dependencyMapper;
     }
 
     @Override
