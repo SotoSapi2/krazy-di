@@ -4,6 +4,9 @@ import io.krazy.dependency.api.*;
 import io.krazy.dependency.api.exception.AmbiguousRegisterException;
 import io.krazy.dependency.api.exception.CircularDependencyException;
 import io.krazy.dependency.api.exception.NoSuchServiceException;
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +15,8 @@ import java.util.Map;
 public class DefaultServiceConfigurator implements IServiceConfigurator
 {
     private final Map<Class<?>, ServiceDescriptor> descriptorMapping = new HashMap<>();
+
+    @Getter(AccessLevel.PROTECTED)
     private final IDependencyMapper dependencyMapper;
 
     public DefaultServiceConfigurator()
@@ -61,5 +66,11 @@ public class DefaultServiceConfigurator implements IServiceConfigurator
     {
         MappingResult mappingResult = dependencyMapper.computeMapping();
         return new DefaultServiceProvider(mappingResult);
+    }
+
+    @VisibleForTesting
+    protected Map<Class<?>, ServiceDescriptor> getDescriptorMutableMap()
+    {
+        return descriptorMapping;
     }
 }
